@@ -1,27 +1,25 @@
-# Use slim Python 3.11 base image
-FROM python:3.11-slim
+FROM python:3.10-slim
 
-# Set working directory inside container
 WORKDIR /app
 
-# Copy requirements first for caching
 COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Install dependencies
-RUN pip install --no-cache-dir --upgrade pip \
-    && pip install --no-cache-dir -r requirements.txt
+# Install wget for model download
+RUN apt-get update && apt-get install -y wget && apt-get clean
 
-# Copy the rest of the project
+# Download DistilBERT model files into the container
+RUN mkdir -p models/deep_model && \
+    wget https://storage.googleapis.com/adrs-distilbert/deep_model/model.safetensors -O models/deep_model/model.safetensors && \
+    wget https://storage.googleapis.com/adrs-distilbert/deep_model/config.json -O models/deep_model/config.json && \
+    wget https://storage.googleapis.com/adrs-distilbert/deep_model/tokenizer_config.json -O models/deep_model/tokenizer_config.json && \
+    wget https://storage.googleapis.com/adrs-distilbert/deep_model/tokenizer.json -O models/deep_model/tokenizer.json && \
+    wget https://storage.googleapis.com/adrs-distilbert/deep_model/vocab.txt -O models/deep_model/vocab.txt && \
+    wget https://storage.googleapis.com/adrs-distilbert/deep_model/special_tokens_map.json -O models/deep_model/special_tokens_map.json
+
+# Copy the rest of your code
 COPY . .
 
-# Set Streamlit environment variables for Cloud Run
-ENV STREAMLIT_SERVER_PORT=8080
-ENV STREAMLIT_SERVER_HEADLESS=true
-ENV STREAMLIT_SERVER_ENABLECORS=false
-ENV STREAMLIT_BROWSER_GATHER_USAGE_STATS=false
+EXPOSE 8501
 
-# Expose the port Cloud Run will serve on
-EXPOSE 8080
-
-# Command to run the Streamlit app
 CMD ["streamlit", "run", "app.py"]
