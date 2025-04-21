@@ -39,32 +39,14 @@ class CDSSApp:
         return joblib.load("models/classical_model.pkl")
 
     def load_deep_model(self):
-
-        gcs_base = "https://storage.googleapis.com/adrs-distilbert/deep_model"
-        required_files = [
-            "model.safetensors",
-            "config.json",
-            "tokenizer_config.json",
-            "tokenizer.json",
-            "vocab.txt",
-            "special_tokens_map.json"
-        ]
+        model_dir = "models/deep_model"
+        
+        if not os.path.exists(model_dir):
+            raise FileNotFoundError(f"Model directory '{model_dir}' not found. Make sure the model files are available locally.")
     
-        temp_dir = tempfile.mkdtemp()
-    
-        # Download files directly into temp folder
-        for fname in required_files:
-            url = f"{gcs_base}/{fname}"
-            local_path = os.path.join(temp_dir, fname)
-            print(f"Downloading {fname}")
-            result = os.system(f"curl -f -s {url} -o {local_path}")
-            if result != 0:
-                raise RuntimeError(f"Failed to download: {url}")
-    
-        # Load directly from temp folder
-        model = DistilBertForSequenceClassification.from_pretrained(temp_dir)
-        tokenizer = DistilBertTokenizerFast.from_pretrained(temp_dir)
-    
+        model = DistilBertForSequenceClassification.from_pretrained(model_dir)
+        tokenizer = DistilBertTokenizerFast.from_pretrained(model_dir)
+        
         return model, tokenizer
 
 
