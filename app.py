@@ -2,7 +2,7 @@ import streamlit as st
 import joblib
 import torch
 from transformers import DistilBertTokenizerFast, DistilBertForSequenceClassification
-from load_data import DataLoader
+from scripts.load_data import DataLoader
 import os
 from dotenv import load_dotenv
 from openai import OpenAI
