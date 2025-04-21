@@ -1,7 +1,8 @@
 import streamlit as st
 import joblib
 import torch
-from transformers import DistilBertTokenizerFast, DistilBertForSequenceClassification
+from transformers import DistilBertTokenizerFast, DistilBertForSequenceClassification, PretrainedConfig, PreTrainedTokenizerFast
+import tempfile
 from scripts.load_data import DataLoader
 import os
 from dotenv import load_dotenv
@@ -38,35 +39,33 @@ class CDSSApp:
         return joblib.load("models/classical_model.pkl")
 
     def load_deep_model(self):
-        """
-        Loads the DistilBERT model and tokenizer. Downloads them from public GCS if not cached locally.
-        """
-        model_path = "models/deep_model"
-        gcs_base = "https://storage.googleapis.com/adrs-distilbert/deep_model"
 
-        required_files = [
-            "model.safetensors",
-            "config.json",
-            "tokenizer_config.json",
-            "tokenizer.json",
-            "vocab.txt",
-            "special_tokens_map.json"
-        ]
+    gcs_base = "https://storage.googleapis.com/adrs-distilbert/deep_model"
+    required_files = [
+        "model.safetensors",
+        "config.json",
+        "tokenizer_config.json",
+        "tokenizer.json",
+        "vocab.txt",
+        "special_tokens_map.json"
+    ]
 
-        # Download from GCS if any file is missing
-        if not os.path.exists(model_path) or any(
-            not os.path.exists(os.path.join(model_path, f)) for f in required_files
-        ):
-            print("Downloading DistilBERT model files from GCS...")
-            os.makedirs(model_path, exist_ok=True)
-            for fname in required_files:
-                url = f"{gcs_base}/{fname}"
-                local_path = os.path.join(model_path, fname)
-                os.system(f"curl -s {url} -o {local_path}")
+    temp_dir = tempfile.mkdtemp()
 
-        model = DistilBertForSequenceClassification.from_pretrained(model_path)
-        tokenizer = DistilBertTokenizerFast.from_pretrained(model_path)
-        return model, tokenizer
+    # Download files directly into temp folder
+    for fname in required_files:
+        url = f"{gcs_base}/{fname}"
+        local_path = os.path.join(temp_dir, fname)
+        print(f"Downloading {fname}")
+        result = os.system(f"curl -f -s {url} -o {local_path}")
+        if result != 0:
+            raise RuntimeError(f"Failed to download: {url}")
+
+    # Load directly from temp folder
+    model = DistilBertForSequenceClassification.from_pretrained(temp_dir)
+    tokenizer = DistilBertTokenizerFast.from_pretrained(temp_dir)
+
+    return model, tokenizer
 
 
     def summarize_results_with_llm(self, top_5):
