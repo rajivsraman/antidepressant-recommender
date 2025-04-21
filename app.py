@@ -42,7 +42,7 @@ class CDSSApp:
         Loads the DistilBERT model and tokenizer. Downloads them from public GCS if not cached locally.
         """
         model_path = "models/deep_model"
-        gcs_base = "https://storage.googleapis.com/adrs-distilbert/models/deep_model"
+        gcs_base = "https://storage.googleapis.com/adrs-distilbert/deep_model"
 
         required_files = [
             "model.safetensors",
