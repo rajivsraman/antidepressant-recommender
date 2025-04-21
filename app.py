@@ -40,32 +40,32 @@ class CDSSApp:
 
     def load_deep_model(self):
 
-    gcs_base = "https://storage.googleapis.com/adrs-distilbert/deep_model"
-    required_files = [
-        "model.safetensors",
-        "config.json",
-        "tokenizer_config.json",
-        "tokenizer.json",
-        "vocab.txt",
-        "special_tokens_map.json"
-    ]
-
-    temp_dir = tempfile.mkdtemp()
-
-    # Download files directly into temp folder
-    for fname in required_files:
-        url = f"{gcs_base}/{fname}"
-        local_path = os.path.join(temp_dir, fname)
-        print(f"Downloading {fname}")
-        result = os.system(f"curl -f -s {url} -o {local_path}")
-        if result != 0:
-            raise RuntimeError(f"Failed to download: {url}")
-
-    # Load directly from temp folder
-    model = DistilBertForSequenceClassification.from_pretrained(temp_dir)
-    tokenizer = DistilBertTokenizerFast.from_pretrained(temp_dir)
-
-    return model, tokenizer
+        gcs_base = "https://storage.googleapis.com/adrs-distilbert/deep_model"
+        required_files = [
+            "model.safetensors",
+            "config.json",
+            "tokenizer_config.json",
+            "tokenizer.json",
+            "vocab.txt",
+            "special_tokens_map.json"
+        ]
+    
+        temp_dir = tempfile.mkdtemp()
+    
+        # Download files directly into temp folder
+        for fname in required_files:
+            url = f"{gcs_base}/{fname}"
+            local_path = os.path.join(temp_dir, fname)
+            print(f"Downloading {fname}")
+            result = os.system(f"curl -f -s {url} -o {local_path}")
+            if result != 0:
+                raise RuntimeError(f"Failed to download: {url}")
+    
+        # Load directly from temp folder
+        model = DistilBertForSequenceClassification.from_pretrained(temp_dir)
+        tokenizer = DistilBertTokenizerFast.from_pretrained(temp_dir)
+    
+        return model, tokenizer
 
 
     def summarize_results_with_llm(self, top_5):
