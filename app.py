@@ -132,15 +132,24 @@ class CDSSApp:
             st.write(llm_output)
 
     def run(self):
-        st.title("Antidepressant Recommendation System")
+        
+        st.markdown("# Happy Healers")
+        st.markdown("#### Helping physicians keep their patients as happy as possible.")
+    
+        st.markdown(
+            "> This tool helps physicians recommend antidepressants tailored to individual patient symptoms. "
+            "Select a model and input patient symptoms (if applicable) to get the top 5 suggestions."
+        )
+    
         self.sidebar()
-
+    
         if self.model_choice == "Naive":
             self.run_naive()
         elif self.model_choice == "TF-IDF":
             self.run_classical()
         elif self.model_choice == "DistilBERT":
             self.run_deep()
+
 
 if __name__ == '__main__':
     app = CDSSApp()
