@@ -11,6 +11,8 @@ The project task was to design a **recommendation system for antidepressant medi
 2. **Classical Machine Learning** - vectorize textual data in reviews via TF-IDF for training, then use linear regression to predict rating from user query
 3. **Deep Learning** - generate vector embeddings and make predictions via DistilBERT, a powerful transformer model with a bidirectional encoder
 
+The pre-trained files for the naive approach and the classical machine learning approach can be located in this repository. The pre-trained deep learning model had to be saved remotely: https://console.cloud.google.com/storage/browser/adrs-distilbert.
+
 ## Setup
 
-1. 
+1. Clone the repository - ```git clone 
