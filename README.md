@@ -1,7 +1,7 @@
 # AIPI 540 (Deep Learning Applications) - Final Project
 ### Author: Rajiv Raman
 ### Institution: Duke University
-### Date: April 22nd, 2025
+### Date: April 22, 2025
 
 ## Overview
 
