@@ -133,7 +133,7 @@ class CDSSApp:
 
     def run(self):
         
-        st.markdown("# Happy Healers")
+        st.markdown("# PharmaSmile")
         st.markdown("#### Helping physicians keep their patients as happy as possible.")
     
         st.markdown(
